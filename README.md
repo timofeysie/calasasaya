@@ -1,12 +1,14 @@
+# calasasaya
 
+This project is a [Serverless][https://serverless.com] deployment of a NodeJS and [AWS Lambda](https://console.aws.amazon.com/lambda/home) application.
 
 ## Workflow
 
 ### Deploy
 ```
-serverless deploy
-or
-sls deploy
+serverless deploy (or sls deploy)
+serverless invoke local
+serverless invoke local --function=createUser --log
 ```
 
 The console will then show endpoints in the Service Information section.
@@ -25,17 +27,17 @@ Serverless: Packaging service...
 Serverless: Excluding development dependencies...
 Serverless: Uploading CloudFormation file to S3...
 Serverless: Uploading artifacts...
-Serverless: Uploading service my-express-application.zip file to S3 (714.55 KB)...
+Serverless: Uploading service calasasaya.zip file to S3 (714.55 KB)...
 Serverless: Validating template...
 Serverless: Updating Stack...
 Serverless: Checking Stack update progress...
 ..................................
 Serverless: Stack update finished...
 Service Information
-service: my-express-application
+service: calasasaya
 stage: dev
 region: us-east-1
-stack: my-express-application-dev
+stack: calasasaya-dev
 resources: 11
 api keys:
   None
@@ -43,7 +45,7 @@ endpoints:
   ANY - https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
   ANY - https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/{proxy+}
 functions:
-  app: my-express-application-dev-app
+  app: calasasaya-dev-app
 layers:
   None
 ```

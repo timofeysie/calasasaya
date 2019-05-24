@@ -1,4 +1,4 @@
-service: my-express-application
+service: calasasaya
 
 provider:
   name: aws

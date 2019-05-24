@@ -1,8 +1,8 @@
 {
   "service": {
-    "service": "my-express-application",
+    "service": "calasasaya",
     "serviceObject": {
-      "name": "my-express-application"
+      "name": "calasasaya"
     },
     "provider": {
       "stage": "dev",
@@ -33,7 +33,7 @@
           "AppLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/my-express-application-dev-app"
+              "LogGroupName": "/aws/lambda/calasasaya-dev-app"
             }
           },
           "IamRoleLambdaExecution": {
@@ -62,7 +62,7 @@
                       "-",
                       [
                         "dev",
-                        "my-express-application",
+                        "calasasaya",
                         "lambda"
                       ]
                     ]
@@ -77,7 +77,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/my-express-application-dev-app:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/calasasaya-dev-app:*"
                           }
                         ]
                       },
@@ -88,7 +88,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/my-express-application-dev-app:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/calasasaya-dev-app:*:*"
                           }
                         ]
                       }
@@ -101,7 +101,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "my-express-application",
+                    "calasasaya",
                     "dev",
                     {
                       "Ref": "AWS::Region"
@@ -119,9 +119,9 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/my-express-application/dev/1558644207788-2019-05-23T20:43:27.788Z/my-express-application.zip"
+                "S3Key": "serverless/calasasaya/dev/1558698126595-2019-05-24T11:42:06.595Z/calasasaya.zip"
               },
-              "FunctionName": "my-express-application-dev-app",
+              "FunctionName": "calasasaya-dev-app",
               "Handler": "index.handler",
               "MemorySize": 1024,
               "Role": {
@@ -138,20 +138,20 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "AppLambdaVersionmft0uc5cQGY6rie6qRYwrJe0FkHivnwCClH0ENVXeo": {
+          "AppLambdaVersionpAMMZLz0NnaJzbS2urFTWhI2mUvIQqLhnBBWpfoK3JU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "7ZnOEDaIl/ebjXQdjjwAiq3msRdNotanEmPtTfArlRc="
+              "CodeSha256": "DSvRRLrbdfYvQiGMYKJJruGHBejG+CrBpSLeW9ieVN8="
             }
           },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-              "Name": "dev-my-express-application",
+              "Name": "dev-calasasaya",
               "EndpointConfiguration": {
                 "Types": [
                   "EDGE"
@@ -263,7 +263,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1558644182099": {
+          "ApiGatewayDeployment1558698095274": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -333,7 +333,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionmft0uc5cQGY6rie6qRYwrJe0FkHivnwCClH0ENVXeo"
+              "Ref": "AppLambdaVersionpAMMZLz0NnaJzbS2urFTWhI2mUvIQqLhnBBWpfoK3JU"
             }
           },
           "ServiceEndpoint": {
@@ -402,7 +402,7 @@
             "http": "ANY {proxy+}"
           }
         ],
-        "name": "my-express-application-dev-app",
+        "name": "calasasaya-dev-app",
         "package": {},
         "memory": 1024,
         "timeout": 6,
@@ -411,10 +411,10 @@
       }
     },
     "layers": {},
-    "artifact": "/Users/tim/node/aws/my-express-application/.serverless/my-express-application.zip"
+    "artifact": "/Users/tim/node/aws/my-express-application/.serverless/calasasaya.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/my-express-application/dev/1558644207788-2019-05-23T20:43:27.788Z",
-    "artifact": "my-express-application.zip"
+    "artifactDirectoryName": "serverless/calasasaya/dev/1558698126595-2019-05-24T11:42:06.595Z",
+    "artifact": "calasasaya.zip"
   }
 }
