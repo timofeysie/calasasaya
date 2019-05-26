@@ -1,8 +1,11 @@
 # calasasaya
 
-This project is a [Serverless][https://serverless.com] deployment of a NodeJS and [AWS Lambda](https://console.aws.amazon.com/lambda/home) application.
+This project is a [Serverless](https://serverless.com) deployment of a NodeJS and [AWS Lambda](https://console.aws.amazon.com/lambda/home) application.
 
+
+#
 ## Workflow
+
 
 ### Deploy
 ```
@@ -15,7 +18,45 @@ The console will then show endpoints in the Service Information section.
 
 https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
 
-Going to this address however show the following:
+
+#
+## Adding a DynamoDB table with REST-like endpoints
+
+We will be adding a user to a database table.  In the yaml file we provision a user table in the resources section using CloudFormation syntax, add IAM permissions for the functions under the iamRoleStatements portion of the provider block and pass the table name as the environment variable USERS_TABLE in the environment portion of the provider block.
+
+Then implement two endpoints: POST /user to create a new user, and GET /user/{userId} to get information on a particular user.
+
+Install the normal stuff:
+```
+$ npm install --save aws-sdk body-parser
+```
+
+export BASE_DOMAIN=https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
+
+Test the endpoints using curl.
+create a user:
+```
+$ curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "calasasaya1", "name": "Alex DeBrie"}'
+{"userId":"calasasaya1","name":"Test User"}
+```
+
+Get the user back:
+```
+$ curl -H "Content-Type: application/json" -X GET ${BASE_DOMAIN}/users/calasasaya1
+{"userId":"calasasaya1","name":"Test User"}
+```
+
+
+## Serverless tasks to do
+
+* Create a Kinesis Stream and configure it to capture data from a website.
+* Logic Workflows using AWS Lambda and Step Functions
+
+
+#
+## Setting up the first endpoint
+
+After initial setup and deployment, going to this address however shows the following:
 ```
 {"message": "Internal server error"}
 ```
@@ -50,7 +91,7 @@ layers:
   None
 ```
 
-## credentials
+## Setting up credentials
 
 https://serverless.com/framework/docs/providers/aws/guide/credentials/
 
