@@ -1,15 +1,39 @@
 {
   "service": {
-    "service": "calasasaya",
+    "service": "my-express-application",
     "serviceObject": {
-      "name": "calasasaya"
+      "name": "my-express-application"
     },
     "provider": {
       "stage": "dev",
       "region": "us-east-1",
       "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*]+?)}",
       "name": "aws",
-      "runtime": "nodejs8.10",
+      "runtime": "nodejs6.10",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:Query",
+            "dynamodb:Scan",
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:DeleteItem"
+          ],
+          "Resource": [
+            {
+              "Fn::GetAtt": [
+                "UsersDynamoDBTable",
+                "Arn"
+              ]
+            }
+          ]
+        }
+      ],
+      "environment": {
+        "USERS_TABLE": "users-table-dev"
+      },
       "versionFunctions": true,
       "remoteFunctionData": null,
       "compiledCloudFormationTemplate": {
@@ -33,7 +57,7 @@
           "AppLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/calasasaya-dev-app"
+              "LogGroupName": "/aws/lambda/my-express-application-dev-app"
             }
           },
           "IamRoleLambdaExecution": {
@@ -62,7 +86,7 @@
                       "-",
                       [
                         "dev",
-                        "calasasaya",
+                        "my-express-application",
                         "lambda"
                       ]
                     ]
@@ -77,7 +101,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/calasasaya-dev-app:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/my-express-application-dev-app:*"
                           }
                         ]
                       },
@@ -88,9 +112,12 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/calasasaya-dev-app:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/my-express-application-dev-app:*:*"
                           }
                         ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
                       }
                     ]
                   }
@@ -101,7 +128,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "calasasaya",
+                    "my-express-application",
                     "dev",
                     {
                       "Ref": "AWS::Region"
@@ -119,9 +146,9 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/calasasaya/dev/1558698126595-2019-05-24T11:42:06.595Z/calasasaya.zip"
+                "S3Key": "serverless/my-express-application/dev/1558845965582-2019-05-26T04:46:05.582Z/my-express-application.zip"
               },
-              "FunctionName": "calasasaya-dev-app",
+              "FunctionName": "my-express-application-dev-app",
               "Handler": "index.handler",
               "MemorySize": 1024,
               "Role": {
@@ -130,28 +157,33 @@
                   "Arn"
                 ]
               },
-              "Runtime": "nodejs8.10",
-              "Timeout": 6
+              "Runtime": "nodejs6.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "USERS_TABLE": "users-table-dev"
+                }
+              }
             },
             "DependsOn": [
               "AppLogGroup",
               "IamRoleLambdaExecution"
             ]
           },
-          "AppLambdaVersionpAMMZLz0NnaJzbS2urFTWhI2mUvIQqLhnBBWpfoK3JU": {
+          "AppLambdaVersionaQ7Wv8NuUAh2C9bwaMt9m7SbOt6m9SYIzOLWCqYM": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "DSvRRLrbdfYvQiGMYKJJruGHBejG+CrBpSLeW9ieVN8="
+              "CodeSha256": "kru8LeYj6s+zhDPhN2Hz/qUXIEhaVxr0SxcdHXqXpXw="
             }
           },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-              "Name": "dev-calasasaya",
+              "Name": "dev-my-express-application",
               "EndpointConfiguration": {
                 "Types": [
                   "EDGE"
@@ -263,7 +295,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1558698095274": {
+          "ApiGatewayDeployment1558845924740": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -322,6 +354,28 @@
                 ]
               }
             }
+          },
+          "UsersDynamoDBTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "userId",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "userId",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              },
+              "TableName": "users-table-dev"
+            }
           }
         },
         "Outputs": {
@@ -333,7 +387,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionpAMMZLz0NnaJzbS2urFTWhI2mUvIQqLhnBBWpfoK3JU"
+              "Ref": "AppLambdaVersionaQ7Wv8NuUAh2C9bwaMt9m7SbOt6m9SYIzOLWCqYM"
             }
           },
           "ServiceEndpoint": {
@@ -390,6 +444,18 @@
       },
       "vpc": {}
     },
+    "custom": {
+      "tableName": "users-table-dev",
+      "dynamodb": {
+        "start": {
+          "migrate": true
+        }
+      }
+    },
+    "plugins": [
+      "serverless-dynamodb-local",
+      "serverless-offline"
+    ],
     "pluginsData": {},
     "functions": {
       "app": {
@@ -402,19 +468,46 @@
             "http": "ANY {proxy+}"
           }
         ],
-        "name": "calasasaya-dev-app",
+        "name": "my-express-application-dev-app",
         "package": {},
         "memory": 1024,
         "timeout": 6,
-        "runtime": "nodejs8.10",
+        "runtime": "nodejs6.10",
         "vpc": {}
       }
     },
+    "resources": {
+      "Resources": {
+        "UsersDynamoDBTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "userId",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "userId",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            },
+            "TableName": "users-table-dev"
+          }
+        }
+      },
+      "Outputs": {}
+    },
     "layers": {},
-    "artifact": "/Users/tim/node/aws/my-express-application/.serverless/calasasaya.zip"
+    "artifact": "/Users/tim/node/aws/my-express-application/.serverless/my-express-application.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/calasasaya/dev/1558698126595-2019-05-24T11:42:06.595Z",
-    "artifact": "calasasaya.zip"
+    "artifactDirectoryName": "serverless/my-express-application/dev/1558845965582-2019-05-26T04:46:05.582Z",
+    "artifact": "my-express-application.zip"
   }
 }

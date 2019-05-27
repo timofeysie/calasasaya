@@ -12,6 +12,7 @@ This project is a [Serverless](https://serverless.com) deployment of a NodeJS an
 serverless deploy (or sls deploy)
 serverless invoke local
 serverless invoke local --function=createUser --log
+export SLS_DEBUG=true // enable debugging
 ```
 
 The console will then show endpoints in the Service Information section.
@@ -46,6 +47,22 @@ $ curl -H "Content-Type: application/json" -X GET ${BASE_DOMAIN}/users/calasasay
 {"userId":"calasasaya1","name":"Test User"}
 ```
 
+These didn't work as there was a DynamoDB error.  Followed [this](https://github.com/99xt/serverless-dynamodb-local/issues/210) to get it working, but the app still does not work.
+
+The output when run locally is:
+```
+Serverless: Invoke offline:start
+Dynamodb Local Started, Visit: http://localhost:8000/shell
+NetworkingError: connect ECONNREFUSED 127.0.0.1:8000: DynamoDB - Error -
+  Networking Error ---------------------------------------
+  connect ECONNREFUSED 127.0.0.1:8000
+     For debugging logs, run again after setting the "SLS_DEBUG=*" environment variable.
+  Stack Trace --------------------------------------------
+NetworkingError: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1117:14)
+From previous event:
+    at PluginManager.invoke (/Users/tim/.nvm/versions/node/v10.14.2/lib/node_modules/serverless/lib/classes/PluginManager.js:422:22)
+```
 
 ## Serverless tasks to do
 
