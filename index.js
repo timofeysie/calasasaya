@@ -21,7 +21,7 @@ if (IS_OFFLINE === 'true') {
 app.use(bodyParser.json({ strict: false }));
 
 app.get('/', function (req, res) {
-  res.send('calasasaya!~')
+  res.send('calasasaya')
 });
 
 // Get User endpoint
