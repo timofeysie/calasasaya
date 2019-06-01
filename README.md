@@ -22,7 +22,7 @@ This project is a [Serverless](https://serverless.com) deployment of a NodeJS an
 ```
 serverless deploy (or sls deploy)
 serverless invoke local
-serverless invoke local --function=createUser --log
+serverless invoke local --function=my-express-application-dev-app --log
 export SLS_DEBUG=true // enable debugging
 ```
 
@@ -43,6 +43,73 @@ backendListUrl = 'https://radiant-springs-38893.herokuapp.com/api/list';
 The is handled in the [Conchifolia](https://github.com/timofeysie/conchifolia) app which is deployed on Heroku.
 
 The goal here is to move that functionality here, and add a category parameter to get an arbitrary list from WikiData.  Right now the list is set to cognitive bias.  Today we will also try a list of fallacies.
+
+We also want to layer the app as per the best practices recommendations.  For example, we have a setup like this for newer routes on that project:
+```
+const cognitive_bias = require('./routes/cognitive_bias.route');
+...
+.use('/cognitive_bias', cognitive_bias)
+```
+
+There are also the following files:
+```
+routes/cognitive_bias.route.js
+controllers/cognitive_bias.controller.js
+models/cognitive_bias.model.js
+```
+
+We also have a utilities directory with database specific stuff in it and a view directory that holds some pages and the Angular app that the Node app serves.
+
+It's nice to think that we can just copy all those files across, change cognitive_bias to items and have everything work.  One problem with this is that the result from he WikiData call comes with the query attached to all the fields.  Another problem is that we were using MongoDB with Mongoose:
+```
+const Schema = mongoose.Schema;
+let CognitiveBiasSchema = new Schema({
+    cognitive_bias: {type: String, required: true, max: 300},
+    cognitive_biasLabel: {type: String, required: false, max: 300},
+    cognitive_biasDescription: {type: String, required: false, max: 300},
+    lang: {type: String, required: false, max: 50}
+});
+```
+
+So the big two challenges here then are use DynamoDB configured via the Serverless yaml file, and create a generic data model that can hold any query result for a particular list.  This could take a while.
+
+I think we should deal with the generic data model first.  So get the API call working with the current data model, then store each whole object as an item and let the client use introspection to work with the data.
+
+
+What do we need to add to our package.json?
+```
+const path = require('path')
+const curator = require('art-curator');
+const https = require('https');
+```
+
+I think that's it.  Actually we don't need path for this functionality.  So leave that out.
+
+Now going to the new endpoint causes the following result:
+https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/users
+
+```
+{"message":"Forbidden"}
+```
+
+Using the c-url command returns the same result.  But getting the user works.  Why is one forbidden and the other not?  Do we need to add something to the yaml?
+
+Looking at the API gatemway, it shows:
+```
+API endpoint: https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/Authorization: NONEMethod: ANY
+```
+
+So where does that dev string come from?  None of the user API endpoints have dev on them.  You can do this:
+```
+https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/users/calasasaya1
+```
+
+But you can't do this:
+```
+https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/items
+```
+
+It returns a 404.
 
 
 #

@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const express = require('express')
 const app = express()
 const AWS = require('aws-sdk');
-
+const items = require('./routes/items.route');
 const USERS_TABLE = process.env.USERS_TABLE;
-
 const IS_OFFLINE = process.env.IS_OFFLINE;
 let dynamoDb;
+
 if (IS_OFFLINE === 'true') {
   dynamoDb = new AWS.DynamoDB.DocumentClient({
     region: 'localhost',
@@ -17,9 +17,10 @@ if (IS_OFFLINE === 'true') {
 } else {
   dynamoDb = new AWS.DynamoDB.DocumentClient();
 };
-
 app.use(bodyParser.json({ strict: false }));
+app.use('/items', items)
 
+// Testing
 app.get('/', function (req, res) {
   res.send('calasasaya')
 });
@@ -30,7 +31,6 @@ app.get('/users/:userId', function (req, res) {
     TableName: USERS_TABLE,
     Key: { userId: req.params.userId },
   };
-
   dynamoDb.get(params, (error, result) => {
     if (error) {
       console.log(error);
@@ -53,7 +53,6 @@ app.post('/users', function (req, res) {
   } else if (typeof name !== 'string') {
     res.status(400).json({ error: '"name" must be a string' });
   }
-
   const params = {
     TableName: USERS_TABLE,
     Item: {
@@ -61,7 +60,6 @@ app.post('/users', function (req, res) {
       name: name,
     },
   };
-
   dynamoDb.put(params, (error) => {
     if (error) {
       console.log(error);
