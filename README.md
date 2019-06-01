@@ -4,6 +4,17 @@ This project is a [Serverless](https://serverless.com) deployment of a NodeJS an
 
 
 #
+## Table of cotents
+
+* [Workflow](#workflow)
+* [The List api](#the-List-api)
+* [Adding a DynamoDB table with REST-like endpoints](#adding-a-DynamoDB-table-with-REST-like-endpoints)
+* [Setting up the first endpoint](#setting-up-the-first-endpoint)
+* [Setting up credentials](#setting-up-credentials)
+* [Serverless tasks to do](#serverless-tasks-to-do)
+
+
+#
 ## Workflow
 
 
@@ -18,6 +29,20 @@ export SLS_DEBUG=true // enable debugging
 The console will then show endpoints in the Service Information section.
 
 https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
+
+
+
+#
+## The List api
+
+In the [Tiwanaku](https://github.com/timofeysie/tiwanaku) project we call this API:
+```
+backendListUrl = 'https://radiant-springs-38893.herokuapp.com/api/list';
+```
+
+The is handled in the [Conchifolia](https://github.com/timofeysie/conchifolia) app which is deployed on Heroku.
+
+The goal here is to move that functionality here, and add a category parameter to get an arbitrary list from WikiData.  Right now the list is set to cognitive bias.  Today we will also try a list of fallacies.
 
 
 #
@@ -37,7 +62,7 @@ export BASE_DOMAIN=https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
 Test the endpoints using curl.
 create a user:
 ```
-$ curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "calasasaya1", "name": "Alex DeBrie"}'
+$ curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "calasasaya1", "name": "Test User"}'
 {"userId":"calasasaya1","name":"Test User"}
 ```
 
@@ -63,11 +88,6 @@ NetworkingError: connect ECONNREFUSED 127.0.0.1:8000
 From previous event:
     at PluginManager.invoke (/Users/tim/.nvm/versions/node/v10.14.2/lib/node_modules/serverless/lib/classes/PluginManager.js:422:22)
 ```
-
-## Serverless tasks to do
-
-* Create a Kinesis Stream and configure it to capture data from a website.
-* Logic Workflows using AWS Lambda and Step Functions
 
 
 #
@@ -127,3 +147,10 @@ Serverless: Failed! ~/.aws/credentials already has a "default" profile. Use the 
 ```
 
 Based on [this](https://serverless.com/blog/serverless-express-rest-api/) article.
+
+## Serverless tasks to do
+
+Possible improvements could be some of the following.
+
+* Create a Kinesis Stream and configure it to capture data from a website.
+* Logic Workflows using AWS Lambda and Step Functions
