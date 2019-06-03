@@ -25,17 +25,17 @@ exports.get_wikidata = function (req, res) {
         wikiRes.on('end', async () => {
             let result = JSON.parse(rawData)['results']['bindings'];
             //let previous_number = await mongoose_utils.count_biases();
-            let found = [];
-            let not_found = [];
-            for (let i = 0; i < result.length; i++) {
-              let desc = result[i]['cognitive_biasDescription'];
-              if (typeof desc !== 'undefined') { desc = result[i]['cognitive_biasDescription']['value']; }
-              let item = {
-                cognitive_bias: result[i]['cognitive_bias']['value'],
-                cognitive_biasLabel: result[i]['cognitive_biasLabel']['value'],
-                cognitive_biasDescription: desc,
-                lang: result[i]['cognitive_biasLabel']['xml:lang'],
-              }
+            // let found = [];
+            // let not_found = [];
+            // for (let i = 0; i < result.length; i++) {
+            //   let desc = result[i]['cognitive_biasDescription'];
+            //   if (typeof desc !== 'undefined') { desc = result[i]['cognitive_biasDescription']['value']; }
+            //   let item = {
+            //     cognitive_bias: result[i]['cognitive_bias']['value'],
+            //     cognitive_biasLabel: result[i]['cognitive_biasLabel']['value'],
+            //     cognitive_biasDescription: desc,
+            //     lang: result[i]['cognitive_biasLabel']['xml:lang'],
+            //   }
               // let report = await mongoose_utils.find_bias(item);
               // if (report === 'found') {
               //   found.push(report);
@@ -43,10 +43,11 @@ exports.get_wikidata = function (req, res) {
               //   not_found.push(report);
               //   // need to create a new entry here
               // }
-            }
+             //}
             let finalResult = {
-              "found": found.length,
-              "not_found": not_found.length,
+              "result": result
+              // "found": found.length,
+              // "not_found": not_found.length,
               //"previous_number": previous_number
             }
             res.status(200).json(finalResult);
