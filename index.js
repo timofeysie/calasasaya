@@ -18,7 +18,7 @@ if (IS_OFFLINE === 'true') {
   dynamoDb = new AWS.DynamoDB.DocumentClient();
 };
 app.use(bodyParser.json({ strict: false }));
-app.use('/items', items)
+app.use('/items/wikidata/:lang/:category/:wdt/:wd', items)
 
 // Testing
 app.get('/', function (req, res) {

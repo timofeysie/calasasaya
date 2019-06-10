@@ -7,7 +7,14 @@ exports.test = function (req, res) {
 
 exports.get_wikidata = function (req, res) {
   const lang = req.params.lang;
-  const wikiUrl = curator.createWikiDataUrl(lang);
+  const cat = req.params.category;
+  const wdt = req.params.wdt;
+  const wd = req.params.wd;
+  console.log('lang',lang);
+  console.log('cat',cat);
+  console.log('wdt',);
+  console.log('wd',wd);
+  const wikiUrl = curator.createWikiDataCategoryUrl(lang, cat, wdt, wd);
     console.log('wikiUrl',wikiUrl);
     https.get(wikiUrl, (wikiRes) => {
         const statusCode = wikiRes.statusCode;
@@ -24,32 +31,10 @@ exports.get_wikidata = function (req, res) {
         wikiRes.on('data', (chunk) => { rawData += chunk; });
         wikiRes.on('end', async () => {
             let result = JSON.parse(rawData)['results']['bindings'];
-            //let previous_number = await mongoose_utils.count_biases();
-            // let found = [];
-            // let not_found = [];
-            // for (let i = 0; i < result.length; i++) {
-            //   let desc = result[i]['cognitive_biasDescription'];
-            //   if (typeof desc !== 'undefined') { desc = result[i]['cognitive_biasDescription']['value']; }
-            //   let item = {
-            //     cognitive_bias: result[i]['cognitive_bias']['value'],
-            //     cognitive_biasLabel: result[i]['cognitive_biasLabel']['value'],
-            //     cognitive_biasDescription: desc,
-            //     lang: result[i]['cognitive_biasLabel']['xml:lang'],
-            //   }
-              // let report = await mongoose_utils.find_bias(item);
-              // if (report === 'found') {
-              //   found.push(report);
-              // } else if (report === 'not found') {
-              //   not_found.push(report);
-              //   // need to create a new entry here
-              // }
-             //}
             let finalResult = {
               "result": result
-              // "found": found.length,
-              // "not_found": not_found.length,
-              //"previous_number": previous_number
             }
+            console.log('result',result);
             res.status(200).json(finalResult);
         });
     }).on('error', (e) => {

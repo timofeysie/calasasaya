@@ -117,138 +117,6 @@ Running the app locally also returns a 404.
 http://localhost:3000/items
 ```
 
-The console output looks like this:
-```
-Serverless: ANY /items (λ: app)
-[offline] requestId: 5547555803458968
-[offline] contentType: application/json
-[offline] requestTemplate:
-[offline] payload: null
-[offline] Invalidating cache...
-[offline] Loading handler... (/Users/tim/node/aws/calasasaya/index)
-DocumentClient {
-  options:
-   { region: 'localhost',
-     endpoint: 'http://localhost:8000',
-     attrValue: 'S8' },
-  service:
-   Service {
-     config:
-      Config {
-        credentials: [EnvironmentCredentials],
-        credentialProvider: [CredentialProviderChain],
-        region: 'localhost',
-        logger: null,
-        apiVersions: {},
-        apiVersion: null,
-        endpoint: 'http://localhost:8000',
-        httpOptions: [Object],
-        maxRetries: undefined,
-        maxRedirects: 10,
-        paramValidation: true,
-        sslEnabled: true,
-        s3ForcePathStyle: false,
-        s3BucketEndpoint: false,
-        s3DisableBodySigning: true,
-        computeChecksums: true,
-        convertResponseTypes: true,
-        correctClockSkew: false,
-        customUserAgent: null,
-        dynamoDbCrc32: true,
-        systemClockOffset: 0,
-        signatureVersion: null,
-        signatureCache: true,
-        retryDelayOptions: {},
-        useAccelerateEndpoint: false,
-        clientSideMonitoring: false,
-        endpointDiscoveryEnabled: false,
-        endpointCacheSize: 1000,
-        hostPrefixEnabled: true },
-     endpoint:
-      Endpoint {
-        protocol: 'http:',
-        host: 'localhost:8000',
-        port: 8000,
-        hostname: 'localhost',
-        pathname: '/',
-        path: '/',
-        href: 'http://localhost:8000/' },
-     _events: { apiCallAttempt: [Array], apiCall: [Array] },
-     MONITOR_EVENTS_BUBBLE: [Function: EVENTS_BUBBLE],
-     CALL_EVENTS_BUBBLE: [Function: CALL_EVENTS_BUBBLE],
-     _clientId: 13 },
-  attrValue: 'S8' }
-[offline] event: { headers:
-   { Host: 'localhost:3000',
-     Connection: 'keep-alive',
-     Pragma: 'no-cache',
-     'Cache-Control': 'no-cache',
-     'Upgrade-Insecure-Requests': '1',
-     'User-Agent':
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
-     Accept:
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-     'Accept-Encoding': 'gzip, deflate, br',
-     'Accept-Language': 'en,ko;q=0.9,en-US;q=0.8,en-AU;q=0.7' },
-  multiValueHeaders:
-   { Host: [ 'localhost:3000' ],
-     Connection: [ 'keep-alive' ],
-     Pragma: [ 'no-cache' ],
-     'Cache-Control': [ 'no-cache' ],
-     'Upgrade-Insecure-Requests': [ '1' ],
-     'User-Agent':
-      [ 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36' ],
-     Accept:
-      [ 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3' ],
-     'Accept-Encoding': [ 'gzip, deflate, br' ],
-     'Accept-Language': [ 'en,ko;q=0.9,en-US;q=0.8,en-AU;q=0.7' ] },
-  path: '/items',
-  pathParameters: { proxy: 'items' },
-  requestContext:
-   { accountId: 'offlineContext_accountId',
-     resourceId: 'offlineContext_resourceId',
-     apiId: 'offlineContext_apiId',
-     stage: 'dev',
-     requestId: 'offlineContext_requestId_7923443055534232',
-     identity:
-      { cognitoIdentityPoolId: 'offlineContext_cognitoIdentityPoolId',
-        accountId: 'offlineContext_accountId',
-        cognitoIdentityId: 'offlineContext_cognitoIdentityId',
-        caller: 'offlineContext_caller',
-        apiKey: 'offlineContext_apiKey',
-        sourceIp: '127.0.0.1',
-        cognitoAuthenticationType: 'offlineContext_cognitoAuthenticationType',
-        cognitoAuthenticationProvider: 'offlineContext_cognitoAuthenticationProvider',
-        userArn: 'offlineContext_userArn',
-        userAgent:
-         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
-        user: 'offlineContext_user' },
-     authorizer:
-      { principalId: 'offlineContext_authorizer_principalId',
-        claims: undefined },
-     protocol: 'HTTP/1.1',
-     resourcePath: '/{proxy*}',
-     httpMethod: 'GET' },
-  resource: '/{proxy*}',
-  httpMethod: 'GET',
-  queryStringParameters: null,
-  multiValueQueryStringParameters: null,
-  stageVariables: null,
-  body: null,
-  isOffline: true }
-[offline] _____ CALLING HANDLER _____
-[offline] _____ HANDLER RESOLVED _____
-[offline] Using response 'default'
-[offline] _____ RESPONSE PARAMETERS PROCCESSING _____
-[offline] Found 0 responseParameters for 'default' response
-[offline] headers { 'x-powered-by': [ 'Express' ],
-  'content-security-policy': [ 'default-src \'none\'' ],
-  'x-content-type-options': [ 'nosniff' ],
-  'content-type': [ 'text/html; charset=utf-8' ],
-  'content-length': [ '144' ] }
-[offline] requestId: 5547555803458968
-```
-
 Just going to http://localhost:3000/ works as expected.  So what's wrong?
 
 Ahh, because our endpoint is actually http://localhost:3000/items/get_wikidata!
@@ -262,6 +130,47 @@ Fix that and we get our list.  There is always this error:
 ```
 
 But that's a minor thing.  Next it's time to pass the subject via the API call.
+
+Getting the parameter is easy enough.  Then we create the query with [the curator](https://github.com/timofeysie/curator/blob/master/src/index.js) package like this:
+```
+const wikiUrl = curator.createWikiDataUrl(lang);
+```
+
+So we are going to have to do some work on that package for a bit.  We can talk about it here though.
+
+Currently we have this:
+```
+SELECT ?fallacy ?fallacy_biasLabel ?fallacyDescription WHERE {
+        SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "[AUTO_LANGUAGE],${language}".
+        }
+        ?fallacy wdt:P31 wd:Q186150.
+    }
+LIMIT 1000
+```
+
+See what I mean about the hard-wired values?  We have a fallacies query somewhere.  Lets compare with that one.  Couldn't find it, but it was easy enough to re-construct.  Try it [here](https://query.wikidata.org/#SELECT%20%3Ffallacy%20%3FfallacyLabel%20%3FfallacyDescription%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Alanguage%20%22%5BAUTO_LANGUAGE%5D%2C%24%7Blanguage%7D%22.%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%3Ffallacy%20wdt%3AP31%20wd%3AQ186150.%0A%20%20%20%20%7D%0ALIMIT%201000):
+```
+SELECT ?fallacy ?fallacyLabel ?fallacyDescription WHERE {
+        SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "[AUTO_LANGUAGE],${language}".
+        }
+        ?fallacy wdt:P31 wd:Q186150.
+    }
+LIMIT 1000
+```
+
+So we should be able to plug in any word there and get the word code, label and description.  But the sharp reader would see that there are two more codes at the end there.  So we made an function like this:
+```
+createWikiDataCategoryUrl(lang, category, wdt, wd);
+```
+
+I would guess that they stand for something like WikiData Table, and then just WikiData.
+
+So this will be a two part process.  First, get the Q-code id, then create a query with that and return the results.
+
+http://localhost:3000/items/get_wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+
 
 #
 ## Adding a DynamoDB table with REST-like endpoints
