@@ -4,9 +4,13 @@ const express = require('express')
 const app = express()
 const AWS = require('aws-sdk');
 const items = require('./routes/items.route');
+const curator = require('art-curator');
+const https = require('https');
+const items_controller = require('./controllers/items.controller');
 const USERS_TABLE = process.env.USERS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
 let dynamoDb;
+const PORT = process.env.PORT || 3000
 
 if (IS_OFFLINE === 'true') {
   dynamoDb = new AWS.DynamoDB.DocumentClient({
@@ -18,7 +22,49 @@ if (IS_OFFLINE === 'true') {
   dynamoDb = new AWS.DynamoDB.DocumentClient();
 };
 app.use(bodyParser.json({ strict: false }));
-app.use('/items/wikidata/:lang/:category/:wdt/:wd', items)
+app.use('/test', items)
+//app.use('/items/wikidata/:lang/:category/:wdt/:wd', items)
+
+app.get('/items/wikidata', function (req, res) {
+  console.log(req.originalUrl)
+  const lang = req.params.lang;
+  const cat = req.params.category;
+  const wdt = req.params.wdt;
+  const wd = req.params.wd;
+  console.log('lang',lang);
+  console.log('cat',cat);
+  console.log('wdt',);
+  console.log('wd',wd);
+  const wikiUrl = curator.createWikiDataCategoryUrl(lang, cat, wdt, wd);
+    console.log('wikiUrl',wikiUrl);
+    https.get(wikiUrl, (wikiRes) => {
+        const statusCode = wikiRes.statusCode;
+        let error;
+        if (statusCode !== 200) {
+            error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
+        }
+        if (error) {
+            console.error(error.message);
+            wikiRes.resume();
+            return;
+        }
+        let rawData = '';
+        wikiRes.on('data', (chunk) => { rawData += chunk; });
+        wikiRes.on('end', async () => {
+            let result = JSON.parse(rawData)['results']['bindings'];
+            let finalResult = {
+              "result": result
+            }
+            console.log('result',result);
+            res.status(200).json(finalResult);
+        });
+    }).on('error', (e) => {
+        console.error(`Got error: ${e.message}`);
+        if (typeof e.status !== 'undefined') {
+          res.status(e.status).send(e.message);
+        }
+    });
+});
 
 // Testing
 app.get('/', function (req, res) {
@@ -70,3 +116,6 @@ app.post('/users', function (req, res) {
 })
 
 module.exports.handler = serverless(app);
+
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+console.log('router.stack',app._router.stack);

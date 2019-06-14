@@ -36,6 +36,7 @@ exports.get_wikidata = function (req, res) {
             }
             console.log('result',result);
             res.status(200).json(finalResult);
+            context.succeed(result);
         });
     }).on('error', (e) => {
         console.error(`Got error: ${e.message}`);

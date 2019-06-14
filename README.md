@@ -169,7 +169,62 @@ I would guess that they stand for something like WikiData Table, and then just W
 
 So this will be a two part process.  First, get the Q-code id, then create a query with that and return the results.
 
+So then this URL should work:
+```
 http://localhost:3000/items/get_wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+```
+
+But, it says:
+```
+Cannot GET /items/get_wikidata
+```
+
+In the terminal output we can see things like this:
+```
+resource: '/{proxy*}',
+httpMethod: 'GET',
+queryStringParameters:
+ { lang: 'en', category: 'fallacies', wdt: 'P31', wd: 'Q186150' },
+ ...
+ stageVariables: null,
+body: null,
+isOffline: true }
+```
+
+So the parameters are getting through.  What's wrong?  Where are my console.logs? (Don't say anything about that please).
+
+Can't I just run the express app locally with node index.js?  If we add the usual listen function, yes, we can.  Then we can see our log.
+
+My first guess is that it's our layering not working.
+index.js:
+```
+app.use('/items/wikidata/:lang/:category/:wdt/:wd', items)
+```
+
+items.route.js:
+```
+router.get('/wikidata/:lang/:category/:wdt/:wd', items_controller.wikidata);
+```
+
+items.controllers.js:
+```
+exports.wikidata = function (req, res) {
+```
+
+Do the params need to be in both the index and the route?  We never get to the controller.
+
+To see where the problem is, I moved the controller function into the index and everything works there until the parameters are added to the get function.  This works for Conchifolia app:
+```
+get('/api/list/:lang', function(req, res) {
+```
+
+Doing this in the index works, but ...
+```
+app.get('/items/wikidata', function (req, res) {
+  const lang = req.params.lang;
+```
+
+That param is undefined.
 
 
 #
