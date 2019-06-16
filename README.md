@@ -249,10 +249,27 @@ router.get('/wikidata', items_controller.get_wikidata);
 
 Then in the items.controller.js:
 ```
-exports.get_wikidata = function (req, res) { }
+exports.get_wikidata = function (req, res) {
+  const cat = req.query.category;
+  ...
+}
 ```
 
 So the controller has no knowledge of Express, we have separations of concerns.  An api endpoint for items that can contain other routes such as items/category, items/code, items/detail, etc.
+
+Then, this works:
+```
+http://localhost:3000/items/wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+```
+
+Do a sls deploy, and now this works also:
+```
+https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/items/wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+```
+
+Sweet.  Now, next is how to get Q186150 from the category name?  We ant to search for "list of <search term>".  This will be a new issue: *Get item code from search term #9*.
+
+
 
 
 #
