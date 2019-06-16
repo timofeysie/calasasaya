@@ -6,14 +6,10 @@ exports.test = function (req, res) {
 };
 
 exports.get_wikidata = function (req, res) {
-  const lang = req.params.lang;
-  const cat = req.params.category;
-  const wdt = req.params.wdt;
-  const wd = req.params.wd;
-  console.log('lang',lang);
-  console.log('cat',cat);
-  console.log('wdt',);
-  console.log('wd',wd);
+  const lang = req.query.lang;
+  const cat = req.query.category;
+  const wdt = req.query.wdt;
+  const wd = req.query.wd;
   const wikiUrl = curator.createWikiDataCategoryUrl(lang, cat, wdt, wd);
     console.log('wikiUrl',wikiUrl);
     https.get(wikiUrl, (wikiRes) => {

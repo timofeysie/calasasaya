@@ -224,7 +224,35 @@ app.get('/items/wikidata', function (req, res) {
   const lang = req.params.lang;
 ```
 
-That param is undefined.
+That param is undefined.  It closes #7, but we've created issue #8 to deal with the params.
+
+Next step, write a blog with the title "Params are not Query Strings".
+```
+const cat = req.params.category;
+```
+should be:
+```
+const cat = req.query.category;
+```
+
+The reason the layering of classes was not working was because the route had to go like this:
+
+In index.js:
+```
+app.use('/items', items)
+```
+
+In items.route.js:
+```
+router.get('/wikidata', items_controller.get_wikidata);
+```
+
+Then in the items.controller.js:
+```
+exports.get_wikidata = function (req, res) { }
+```
+
+So the controller has no knowledge of Express, we have separations of concerns.  An api endpoint for items that can contain other routes such as items/category, items/code, items/detail, etc.
 
 
 #
