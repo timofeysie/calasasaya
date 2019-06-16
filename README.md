@@ -7,6 +7,7 @@ This project is a [Serverless](https://serverless.com) deployment of a NodeJS an
 ## Table of cotents
 
 * [Workflow](#workflow)
+* [Adding authentication with Cognito](#adding-authentication-with-Cognito)
 * [The List api](#the-List-api)
 * [Adding a DynamoDB table with REST-like endpoints](#adding-a-DynamoDB-table-with-REST-like-endpoints)
 * [Setting up the first endpoint](#setting-up-the-first-endpoint)
@@ -30,6 +31,63 @@ sls offline start
 The console will then show endpoints in the Service Information section.
 
 https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
+
+
+#
+## Adding authentication with Cognito
+
+Using the official [serverless](https://serverless-stack.com/chapters/create-a-dynamodb-table.html) docs to get the user/preferences file going.
+We are going to use the composite primary key method when creating the notes table for this project.
+
+Had to use sort key name: nonteIdSortKey during setup which was different from what the screenshot said it would be.
+
+Next, create the S3 bucket.
+nodes-app-upploads becomes just quallasuyu-uploads for us since names are universal.
+```
+On creation, got:
+Warning
+Bucket quallasuyu-uploads created successfully.
+Error setting properties and permissions on the bucket.
+```
+
+Is that a warning or an error?
+
+The domain name for the login re-dirct will be:
+https://calasasaya.auth.us-east-1.amazoncognito.com
+
+
+Create User
+First, use the AWS CLI to sign up a user:
+```
+aws cognito-idp sign-up \
+  --region us-east-1 \
+  --client-id 7t5u8rmgkdqmsokh0bteamt16a \
+  --username admin@example.com \
+  --password Passw0rd!
+```
+
+The client id is actually the notes app client, not the user pool id.
+
+verify the user:
+```
+aws cognito-idp admin-confirm-sign-up \
+  --region us-east-1 \
+  --user-pool-id us-east-1_y3LHvvlPG \
+  --username admin@example.com
+```
+
+This time neither the Pool ARN nor the notes app client value.  The result of the verification command is:
+```
+An error occurred (AccessDeniedException) when calling the AdminConfirmSignUp operation: User: arn:aws:iam::100641718971:user/serverless-agent is not authorized to perform: cognito-idp:AdminConfirmSignUp on resource: arn:aws:cognito-idp:us-east-1:100641718971:userpool/us-east-1_y3LHvvlPG
+```
+
+After creating the notes table and a Cognito user, the article calls to create a new serverless app.  We already have a serverless app.  Sooo... lets *try* and adapt what we have to do to the [sample serverless app](https://github.com/AnomalyInnovations/serverless-nodejs-starter) to our current app.  We really want to get the React client app going, but as a bonus authenticate users so that things that cost money such as saving user information can be protected.
+
+It relies on these libs:
+```
+$ npm install aws-sdk --save-dev
+$ npm install uuid --save
+```
 
 
 
@@ -269,7 +327,7 @@ https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/items/wikidata?lang=e
 
 Sweet.  Now, next is how to get Q186150 from the category name?  We ant to search for "list of <search term>".  This will be a new issue: *Get item code from search term #9*.
 
-
+We can now close #4 *Create a list API endpoint for a WikiData request*.
 
 
 #
