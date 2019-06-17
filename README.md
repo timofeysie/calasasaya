@@ -89,6 +89,36 @@ $ npm install aws-sdk --save-dev
 $ npm install uuid --save
 ```
 
+However, the demo project does not use Express, and it might be wise to follow the article as a separate project and learned outcomes can be implemented here.  We do want to get to the React app pronto, once we can search for an item Q-code and then assemble a list of the results, we will want a front end to test out it's effectiveness.
+
+Previous notes in the [Loranthifolia project](https://github.com/timofeysie/loranthifolia) talk about it:
+*Number 2 & 3 have been addressed already. Currently, number 7 is requiring quite a bit of work due to finding the Q-codes for WikiData items. See the Conchifolia project for updates on that saga. Once it's working there we can implement the same solution here. After getting the redirects working, instead of getting in to using the Q-codes...*
+
+```
+navigateAction(item: string, i: number)
+ /**  This will be used among other things to find the list of available languages
+  * for a detail page.
+  * @param item @returns the q-code which is the last item in a URI http://www.wikidata.org/entity/Q4533272*/
+   findQCode(item)
+```
+
+```
+ SELECT ?lab ?item WHERE {
+   ?item rdfs:label ?lab .
+   MINUS {?item wdt:P31 wd:Q4167836 } . # no category items
+   VALUES ?lab {"fallacy"@en
+   } .
+ }
+```
+
+This SPAQL returns wd:Q186150.  That looks familiar, huh?  That's exactly what we wanted.
+
+Starting the client like this:
+```
+npx create-react-app acapana
+```
+
+The Node backend for it will be in a different as-yet-named project.
 
 
 #
