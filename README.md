@@ -32,6 +32,196 @@ The console will then show endpoints in the Service Information section.
 
 https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
 
+An example call:
+
+https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/items/wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+
+
+
+#
+## Serverless Error
+
+Function "my-express-application" doesn't exist in this Service
+
+According to [this answer](https://stackoverflow.com/questions/42302798/how-to-use-serverless-functions-says-doesnt-exist), the example:
+```
+...
+functions:
+  createMovie:
+    handler: handler.createMovie
+    ...
+```
+
+Then they called it this way:
+```
+serverless invoke -f serverless-dev-createMovie -l
+```
+
+
+This project's serverless.yml file has this:
+```
+functions:
+  app:
+    handler: index.handler
+```
+
+The SO answer linked above says:
+*you need to say: serverless invoke -f createMovie -l
+
+Check Cloudwatch log for the internal server error. I am guessing it's the dynamodb table name. You've created 'moviesTwo', but you have
+
+TableName: 'movies'*
+
+
+So can we do this?
+```
+serverless invoke -f handler l
+```
+
+No, we also get the error:
+```
+Function "handler" doesn't exist in this Service
+```
+
+Running sls deploy returns this error:
+```
+ServerlessError: The security token included in the request is invalid.
+```
+
+“Star Wars Rebels” season 7 episode 13 “A World Between Worlds”.
+
+Maybe we got logged out?
+```
+serverless config credentials --provider aws --key ... --secret ...
+Serverless: Setting up AWS...
+Serverless: Failed! ~/.aws/credentials already has a "default" profile. Use the overwrite flag ("-o" or "--overwrite") to force the update
+```
+
+Oh, had to do this:
+```
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+```
+
+But the sample call still errors out:
+```
+Request URL: https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev/items/wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+Request Method: GET
+Status Code: 502
+```
+
+
+The utility test works fine:
+
+https://k7ixzm3zr0.execute-api.us-east-1.amazonaws.com/dev
+
+
+Running the app in a non-serverless way (ie: node index.js to run locally) then this:
+
+http://localhost:3000/items/wikidata?lang=en&category=fallacies&wdt=P31&wd=Q186150
+
+returns this in the terminal at least.
+```
+https://query.wikidata.org/sparql?format=json&query=%0A%20%20%20%20%20%20%20%20SELECT%20%3Ffallacies%20%3FfallaciesLabel%20%3FfallaciesDescription%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Alanguage%20%22%5BAUTO_LANGUAGE%5D%2Cen%22.%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ffallacies%20wdt%3AP31%20wd%3AQ186150.%0A%20%20%20%20%20%20%20%20%7D%0A%09%09LIMIT%201000
+```
+
+
+Going to this url turns up the following:
+```
+{
+  "head" : {
+    "vars" : [ "fallacies", "fallaciesLabel", "fallaciesDescription" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "fallacies" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q295150"
+      },
+      "fallaciesLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "ecological fallacy"
+      },
+      "fallaciesDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "logical fallacy"
+      }
+      ...
+```
+
+Even the old Conchifolia demonstration implementation is erroring out now:
+```
+Request URL: https://radiant-springs-38893.herokuapp.com/api/list/en
+Request Method: GET
+Status Code: 503 Service Unavailable
+```
+
+Something has changed at WikiData.  Time for a hamburger.  That means red wine (and less programming).
+
+The server returns a 403, and the client gets a 503.
+
+Some third party [docs for SPARQLs](https://wiki.duraspace.org/display/VIVODOC110x/SPARQL+Query+API) give the following reason for a 403 on their system:
+```
+403 Forbidden	HTTP request did not include an email parameter.
+HTTP request did not include a password parameter.
+The combination of email and password is not valid.
+The selected VIVO account is not authorized to use the SPARQL Query API.
+```
+
+Our query looks like this:
+```
+https://query.wikidata.org/sparql?format=json&query=%0A%...%09LIMIT%201000
+```
+
+
+SPARQL Endpoints:
+```
+https://query.wikidata.org/bigdata/namespace/wdq/sparql?query={SPARQL}
+https://query.wikidata.org/sparql?query={SPARQL}
+https://query.wikidata.org/bigdata/ldf.
+```
+
+Doing the request from the front end fetch statement works fine.  Well, that's extremely serverless.  We could just create the SPARQL right there and we won't need the server for this particular feature.  Really we only need to persist user specific data.  
+
+The first step then is a static query and display the list.  Next, add the WikiData SDK and construct the list query via the input field.
+
+Here is how it's done in [the curator lib](https://github.com/timofeysie/curator/blob/master/src/index.js):
+```
+/**
+ * @returns data.results.bindings
+ */
+function createWikiDataCategoryUrl(lang, category, wdt, wd) {
+    let language = 'en';
+    if (lang) {
+        language = lang;
+    }
+    const sparql = `
+        SELECT ?${category} ?${category}Label ?${category}Description WHERE {
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],${language}".
+            }
+            ?${category} wdt:${wdt} wd:${wd}.
+        }
+		LIMIT 1000`
+	const url = wdk.sparqlQuery(sparql);
+	return url;
+}
+```
+
+It's using "wikidata-sdk": "^5.12.0".  The most recent version is 7.0.7.
+
+There might be some breaking changes.  It reads: *Wikibase SDK
+A javascript tool-suite to query a Wikibase instance and simplify its results.
+
+This package was primarily developed as wikidata-sdk but has now being generalized to support any Wikibase instance: wikidata.org among others.*
+
+So shouldn't we just use the Wikibase SDK instead?
+
+Thinking in React terms about where to put the function, middleware was the first idea.
+
+
 
 #
 ## Adding authentication with Cognito
