@@ -4,7 +4,7 @@ This project is a [Serverless](https://serverless.com) deployment of a NodeJS an
 
 
 #
-## Table of cotents
+## Table of contents
 
 * [Workflow](#workflow)
 * [Adding authentication with Cognito](#adding-authentication-with-Cognito)
